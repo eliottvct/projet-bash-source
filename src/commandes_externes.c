@@ -17,8 +17,6 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
 
     strcpy(ligne, "");
     strcpy(path, "");
-    t_bool premierPlan;
-    int i;
 
     for (i = 0; i < nbArg; i++) {
         if (strlen(ligne) != 0) {
