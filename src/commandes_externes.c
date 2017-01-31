@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <wait.h>
 #include "divers.h"
 #include "commandes_externes.h"
 #include "entities.c"
