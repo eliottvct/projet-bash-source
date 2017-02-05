@@ -8,6 +8,7 @@ void AfficheInvite() {
 
 	char invite[CHAINE_MAX];
 	char chaine[CHAINE_MAX];
+    char host[CHAINE_MAX];
 	char var[CHAINE_MAX];
 	size_t i;
 	char *dwRet;
@@ -30,7 +31,8 @@ void AfficheInvite() {
 						lire_variable("USER", var, sizeof(var));
 						break;
 					case 'h' :
-                        ecrire_variable("HOSTNAME", "MacBookPro");  //cheat a modifier
+                        gethostname(host, sizeof(host));
+                        ecrire_variable("HOSTNAME", host);  //cheat a modifier
 						lire_variable("HOSTNAME", var, sizeof(var));
 						break;
 					case 's' :

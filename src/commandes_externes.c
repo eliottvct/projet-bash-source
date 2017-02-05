@@ -46,7 +46,6 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
     pid_t pid_fils = -1;
     char * args[CHAINE_MAX];
     char *cmd = info->ligne_cmd[debut];
-    pid_fils = -1;
 
 
     for (int j = 0; j<nbArg; j++)
@@ -63,7 +62,7 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
         case 0:
             if (!EST_EGAL(info->sortie, "")) {  //redirection demandée
                 int sortie = open(info->sortie, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
-                if (!(sortie == NULL)) {   //si le fichier n'est pas accessible en écriture
+                if (sortie != NULL) {   //si le fichier n'est pas accessible en écriture
                     dup2(sortie,1);
                     close(sortie);
                 }
@@ -71,7 +70,7 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
 
             if (!EST_EGAL(info->entree, "")) {  //redirection demandée
                 int entree = open(info->entree, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
-                if (!(entree == NULL)) {   //si le fichier n'est pas accessible en écriture
+                if (entree != NULL) {   //si le fichier n'est pas accessible en écriture
                     dup2(entree,0);
                     close(entree);
                 }
