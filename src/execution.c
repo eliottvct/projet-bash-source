@@ -58,6 +58,9 @@ void execution_ligne_cmd(parse_info *info) {
             /* il suffit de sortir de la fonction, on est arrive a un commentaire
              * le reste de la ligne de commande n'est pas a traiter
              */
+            while (j < info->nb_arg) {
+                j++;
+            }
         }
 
         /* a ce stade, on a le resultat de la commande, et on sait s'il faut traiter la commande

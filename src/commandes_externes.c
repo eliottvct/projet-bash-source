@@ -75,7 +75,6 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
 
             DEBUG(printf("Path : %s \n", p));
             execvp(cmd, args);
-            //exit(255);
             exit(errno);
             break;
 
