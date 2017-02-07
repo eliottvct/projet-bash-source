@@ -86,7 +86,7 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
 
         default: {
             int status;
-            if( waitpid(pid_fils, &status, 0) < 0 ) {
+            if( waitpid(pid_fils, &status, 0) < 0 ) {   //necessary ?
                 perror("wait");
                 //exit(254);
                 return faux;
@@ -95,15 +95,18 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
                 wait(&status);
                 if(WIFEXITED(status)) {
                     printf("child %d exited with = %d\n", pid_fils, WEXITSTATUS(status));
-                    if (WEXITSTATUS(status) == 0)
+                    if (WEXITSTATUS(status) == 0)   //program succeeded
                         return vrai;
-                    else
+                    else    //program failed but exited normally
                         return faux;
                     //exit(WEXITSTATUS(status));
                 }
-                if(WIFSIGNALED(status)) {
+                if(WIFSIGNALED(status)) {   //necessary ?
                     printf("Le processus %d est mort: signal %d%s\n", pid_fils, WTERMSIG(status), WCOREDUMP(status) ? " - core dumped" : "");
                     //exit(1);
+                    return faux;
+                }
+                else {  //program exited abnormally
                     return faux;
                 }
             }
