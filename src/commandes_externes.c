@@ -91,12 +91,8 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
                         return faux;
                     //exit(WEXITSTATUS(status));
                 }
-                if (WIFSIGNALED(status)) {
-                    printf("Le processus %d est mort: signal %d%s\n", pid_fils, WTERMSIG(status),
-                           WCOREDUMP(status) ? " - core dumped" : "");
-                if(WIFSIGNALED(status)) {   //necessary ?
+                if(WIFSIGNALED(status)) {
                     printf("Le processus %d est mort: signal %d%s\n", pid_fils, WTERMSIG(status), WCOREDUMP(status) ? " - core dumped" : "");
-                    //exit(1);
                     return faux;
                 }
                 else {  //program exited abnormally
@@ -105,44 +101,4 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
             }
         }
     }
-
-
-
-
-
-/*
-    // Sortie du programme en cas d'échec d'execution du fork
-    if ((pid_fils = fork()) < 0){
-        perror("Echec du fork\n");
-        return faux;
-    }
-
-    // Code exécuté lorsque l'exec de fork n'est pas un échec
-    if (pid_fils == 0){
-        if (!EST_EGAL(info->sortie, "")) {  //redirection demandée
-            int sortie = open(info->sortie,
-                        O_CREAT | O_RDWR | O_APPEND,
-            int sortie = open(info->sortie, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
-            if (!(sortie == NULL)) {   //si le fichier n'est pas accessible en écriture
-                dup2(sortie,1);
-                close(sortie);
-            }
-        }
-
-        if (!EST_EGAL(info->entree, "")) {  //redirection demandée
-            int entree = open(info->entree,
-                              O_CREAT | O_RDWR | O_APPEND,
-            int entree = open(info->entree, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
-            if (!(entree == NULL)) {   //si le fichier n'est pas accessible en écriture
-                dup2(entree,0);
-                close(entree);
-            }
-        }
-
-        DEBUG(printf("Path : %s \n", p));
-        execvp(cmd, args);
-        exit(status);
-    }
-    }*/
-    //return vrai;
 }
