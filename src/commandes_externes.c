@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <wait.h>
+#include <errno.h>
 #include "divers.h"
 #include "commandes_externes.h"
 #include "entities.c"
@@ -31,14 +32,15 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
 
     strcat(path, "bin/");
     strcat(path, info->ligne_cmd[debut]);
-    fork_execute(path, info, nbArg, debut);
+    t_bool result = fork_execute(path, info, nbArg, debut);
 
+    //à revoir
     premierPlan = (info->modificateur[debut+1] != ARRIERE_PLAN);
     if(premierPlan) {
         wait(NULL);
     }
 
-    return vrai;
+    return result;
 }
 
 
@@ -78,7 +80,8 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
 
             DEBUG(printf("Path : %s \n", p));
             execvp(cmd, args);
-            exit(255);
+            //exit(255);
+            exit(errno);
             break;
 
         default: {
@@ -88,20 +91,22 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
                 //exit(254);
                 return faux;
             }
-            if(WIFEXITED(status)) {
-                //printf("Le processus %d a retourné un status %d\n", pid_fils, WEXITSTATUS(status));
-                if (WEXITSTATUS(status) == 255)
+            else {
+                wait(&status);
+                if(WIFEXITED(status)) {
+                    printf("child %d exited with = %d\n", pid_fils, WEXITSTATUS(status));
+                    if (WEXITSTATUS(status) == 0)
+                        return vrai;
+                    else
+                        return faux;
+                    //exit(WEXITSTATUS(status));
+                }
+                if(WIFSIGNALED(status)) {
+                    printf("Le processus %d est mort: signal %d%s\n", pid_fils, WTERMSIG(status), WCOREDUMP(status) ? " - core dumped" : "");
+                    //exit(1);
                     return faux;
-                else
-                    return vrai;
-                //exit(WEXITSTATUS(status));
+                }
             }
-            if(WIFSIGNALED(status)) {
-                printf("Le processus %d est mort: signal %d%s\n", pid_fils, WTERMSIG(status), WCOREDUMP(status) ? " - core dumped" : "");
-                //exit(1);
-                return faux;
-            }
-            break;
         }
     }
 
