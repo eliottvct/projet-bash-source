@@ -35,11 +35,6 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
     t_bool result = fork_execute(path, info, nbArg, debut);
 
     //à revoir
-    premierPlan = (info->modificateur[debut+1] != ARRIERE_PLAN);
-    if(premierPlan) {
-        wait(NULL);
-    }
-
     return result;
 }
 
@@ -86,14 +81,9 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
 
         default: {
             int status;
-            if( waitpid(pid_fils, &status, 0) < 0 ) {   //necessary ?
-                perror("wait");
-                //exit(254);
-                return faux;
-            }
-            else {
+            if ((info->modificateur[debut + 1] != ARRIERE_PLAN)) {
                 wait(&status);
-                if(WIFEXITED(status)) {
+                if (WIFEXITED(status)) {
                     printf("child %d exited with = %d\n", pid_fils, WEXITSTATUS(status));
                     if (WEXITSTATUS(status) == 0)   //program succeeded
                         return vrai;
@@ -101,6 +91,9 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
                         return faux;
                     //exit(WEXITSTATUS(status));
                 }
+                if (WIFSIGNALED(status)) {
+                    printf("Le processus %d est mort: signal %d%s\n", pid_fils, WTERMSIG(status),
+                           WCOREDUMP(status) ? " - core dumped" : "");
                 if(WIFSIGNALED(status)) {   //necessary ?
                     printf("Le processus %d est mort: signal %d%s\n", pid_fils, WTERMSIG(status), WCOREDUMP(status) ? " - core dumped" : "");
                     //exit(1);
