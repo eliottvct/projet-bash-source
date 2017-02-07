@@ -10,6 +10,7 @@ void AfficheInvite() {
 	char chaine[CHAINE_MAX];
     char host[CHAINE_MAX];
 	char var[CHAINE_MAX];
+    char home[CHAINE_MAX];
 	size_t i;
 	char *dwRet;
 
@@ -31,8 +32,8 @@ void AfficheInvite() {
 						lire_variable("USER", var, sizeof(var));
 						break;
 					case 'h' :
-                        gethostname(host, sizeof(host));
-                        ecrire_variable("HOSTNAME", host);  //cheat a modifier
+                        gethostname(host, sizeof(host));	//on récupère le nom de la machine grâce à la fonction C gethostname()
+                        ecrire_variable("HOSTNAME", host);
 						lire_variable("HOSTNAME", var, sizeof(var));
 						break;
 					case 's' :
@@ -44,6 +45,10 @@ void AfficheInvite() {
 							fprintf(stderr, "Echec lors de l'appel a getcwd !\n");
 							fflush(stderr);
 						}
+						else {
+                            lire_variable("HOME", home, sizeof(home));
+                            strcpy(var, replace_str(var, home, "~"));
+                        }
                         break;
 					default :
 						/* cas impossible a priori */
@@ -90,4 +95,16 @@ t_bool lire_variable(char *nomVar, char *valeur, int taille) {
         DEBUG(printf("------------ Fin de lire_variable() \n"));
         return faux;
 	}
+}
+
+char *replace_str(char *str, char *orig, char *rep)
+{
+    static char buffer[4096];
+    char *p;
+    if(!(p = strstr(str, orig)))  // Is 'orig' even in 'str'?
+        return str;
+    strncpy(buffer, str, p-str); // Copy characters from 'str' start to 'orig' st$
+    buffer[p-str] = '\0';
+    sprintf(buffer+(p-str), "%s%s", rep, p+strlen(orig));
+    return buffer;
 }
