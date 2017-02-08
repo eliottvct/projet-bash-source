@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[]) {
 
-    printf("%s", argv[0]);
+    DEBUG(printf("%s", argv[0]));
     char ligne_cmd[CHAINE_MAX];
     char verOS[CHAINE_MAX];
     FILE *entree;
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
             //char buf[1024];
             //strcpy(buf, argv[1]);
             entree =fopen(argv[1], "r");
-            //printf("argv[1] is %s\n", buf);
+            DEBUG(("argv[1] is %s\n", buf));
             (void) argv;
         }
 
