@@ -4,6 +4,7 @@
 #include "commandes_internes.h"
 #include "commandes_externes.h"
 #include "entities.c"
+#include "parse.h"
 
 void execution_ligne_cmd(parse_info *info) {
 
@@ -52,27 +53,48 @@ void execution_ligne_cmd(parse_info *info) {
             /* il faut traiter (par simplification uniquement pour deux commandes)
              * le cas de la communication via un tube
              */
+            char *arg1[3];
+            char *arg2[4];
+
+            arg1[0] = "/bin/cat";
+            arg1[1] = "fichier";
+            arg1[2] = NULL;
+            arg2[0] = "/bin/grep";
+            arg2[1] = "thomas";
+            arg2[2] = "-c";
+            arg2[3] = NULL;
             int p[2];
             pipe(p);
-            //close(1);
-            close(p[0]);
-            //dup2(p[1],1);
-            //close(p[1]);
-            execution_cmd(info, i, nb_arg);
-            pid_t pid_fils = -1;
-            pid_fils = fork();
-            if (pid_fils == 0) {
-                /* Redirect input of process out of pipe */
-                close(p[1]);
-                dup2(p[0],0);
+            pid_t pid_fils1 = -1;
+            if ((pid_fils1=fork()) < 0){
+
+            }
+            if (!pid_fils1) {
                 close(p[0]);
-                while (j < info->nb_arg && (info->modificateur[j] != EXECUTION && info->modificateur[j] != TUBE)) {
-                    j++;
-                }
-                execution_cmd(info, j, nb_arg);
-            }else {
-                wait(NULL);
+                dup2(p[1], 1);
                 close(p[1]);
+                execution_cmd(info, i, nb_arg);
+            }
+            if(pid_fils1) {
+                pid_t pid_fils2 = -1;
+                if ((pid_fils2=fork()) < 0) {
+
+                }
+                if (!pid_fils2) {
+                    close(p[1]);
+                    dup2(p[0], 0);
+                    close(p[0]);
+                    while (j < info->nb_arg && (info->modificateur[j] != EXECUTION && info->modificateur[j] != TUBE)) {
+                        j++;
+                    }
+                    execution_cmd(info, j, (info->nb_arg-nb_arg));
+                }
+                close(p[0]);
+                close(p[1]);
+                int status;
+                waitpid(pid_fils2, &status, 0);
+                printf("Fini");
+                exit(0);
             }
         } else {
             resultat = execution_cmd(info, i, nb_arg);

@@ -32,7 +32,17 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
 
     strcat(path, "bin/");
     strcat(path, info->ligne_cmd[debut]);
-    t_bool result = fork_execute(path, info, nbArg, debut);
+    t_bool result = faux;
+   // if(info->modificateur[debut + 2] != TUBE) {
+    //    result = fork_execute(path, info, nbArg, debut);
+    //}else{
+        char * args[ARG_MAX];
+        char *cmd = info->ligne_cmd[debut];
+        for (int j = 0; j<nbArg; j++)
+            args[j] = info->ligne_cmd[debut+j];
+        args[nbArg] = (char *)0;
+        execvp(cmd, args);
+    //}
 
     //à revoir
     return result;
