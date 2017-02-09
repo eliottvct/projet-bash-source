@@ -41,12 +41,12 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
 
 t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
     pid_t pid_fils = -1;
-    char * args[CHAINE_MAX];
+    char * args[ARG_MAX];
     char *cmd = info->ligne_cmd[debut];
 
 
     for (int j = 0; j<nbArg; j++)
-        args[j] = info->ligne_cmd[j];
+        args[j] = info->ligne_cmd[debut+j];
     args[nbArg] = (char *)0;
 
     pid_fils = fork();

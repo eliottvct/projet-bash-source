@@ -1,3 +1,5 @@
+#include <wait.h>
+#include <stdlib.h>
 #include "execution.h"
 #include "commandes_internes.h"
 #include "commandes_externes.h"
@@ -50,6 +52,28 @@ void execution_ligne_cmd(parse_info *info) {
             /* il faut traiter (par simplification uniquement pour deux commandes)
              * le cas de la communication via un tube
              */
+            int p[2];
+            pipe(p);
+            //close(1);
+            close(p[0]);
+            //dup2(p[1],1);
+            //close(p[1]);
+            execution_cmd(info, i, nb_arg);
+            pid_t pid_fils = -1;
+            pid_fils = fork();
+            if (pid_fils == 0) {
+                /* Redirect input of process out of pipe */
+                close(p[1]);
+                dup2(p[0],0);
+                close(p[0]);
+                while (j < info->nb_arg && (info->modificateur[j] != EXECUTION && info->modificateur[j] != TUBE)) {
+                    j++;
+                }
+                execution_cmd(info, j, nb_arg);
+            }else {
+                wait(NULL);
+                close(p[1]);
+            }
         } else {
             resultat = execution_cmd(info, i, nb_arg);
         }
