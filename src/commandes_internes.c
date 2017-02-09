@@ -96,12 +96,14 @@ t_bool ActionLS(parse_info *info, int debut, int nbArg) {
     DIR *d;
     struct dirent *dir;
     struct stat st;
+    char buf[512];
 
     d = opendir(folder);
     if (!d)
         return faux;
     else {
         while ((dir = readdir(d)) != NULL) {
+            stat(buf, &st);
             switch (st.st_mode & S_IFMT) {
                 case S_IFREG:
                     printf("regular file || ");
@@ -127,8 +129,10 @@ t_bool ActionLS(parse_info *info, int debut, int nbArg) {
                 default:
                     printf("unknown || ");
             }
-            printf("%s\n", dir->d_name);
+            sprintf(buf, "%s\n", dir->d_name);
 
+            printf("%zu", st.st_size);
+            printf(" %s\n", dir->d_name);
         }
         closedir(d);
     }

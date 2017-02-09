@@ -58,7 +58,7 @@ void execution_ligne_cmd(parse_info *info) {
             /* il suffit de sortir de la fonction, on est arrive a un commentaire
              * le reste de la ligne de commande n'est pas a traiter
              */
-            while (j < info->nb_arg) {
+            while (j < info->nb_arg) {  //on "décale" le j jusqu'à la fin
                 j++;
             }
         }
