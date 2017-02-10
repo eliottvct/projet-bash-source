@@ -84,61 +84,6 @@ t_bool ActionCD(parse_info *info, int debut, int nbArg) {
 
 }
 
-t_bool ActionLS(parse_info *info, int debut, int nbArg) {
-
-    /* Utilisation des parametres */
-    /* Premiere etape */
-    (void) info;
-    (void) debut;
-    (void) nbArg;
-
-    char* folder=".";
-    DIR *d;
-    struct dirent *dir;
-    struct stat st;
-    char buf[512];
-
-    d = opendir(folder);
-    if (!d)
-        return faux;
-    else {
-        while ((dir = readdir(d)) != NULL) {
-            stat(buf, &st);
-            switch (st.st_mode & S_IFMT) {
-                case S_IFREG:
-                    printf("regular file || ");
-                    break;
-                case S_IFDIR:
-                    printf("directory || ");
-                    break;
-                case S_IFCHR:
-                    printf("character device || ");
-                    break;
-                case S_IFBLK:
-                    printf("block device || ");
-                    break;
-                case S_IFLNK:
-                    printf("symbolic link || ");
-                    break;
-                case S_IFIFO:
-                    printf("pipe || ");
-                    break;
-                case S_IFSOCK:
-                    printf("socket || ");
-                    break;
-                default:
-                    printf("unknown || ");
-            }
-            sprintf(buf, "%s\n", dir->d_name);
-
-            printf("%zu", st.st_size);
-            printf(" %s\n", dir->d_name);
-        }
-        closedir(d);
-    }
-    return vrai;
-}
-
 t_bool ActionPWD(parse_info *info, int debut, int nbArg) {
     char wd[MAX];
     wd[MAX-1] = '\0';

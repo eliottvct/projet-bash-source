@@ -141,9 +141,6 @@ t_bool execution_cmd(parse_info *info, int debut, int nb_arg) {
     if (EST_EGAL (info->ligne_cmd[debut], "cd")) {
         return ActionCD(info, debut, nb_arg);
     }
-    /*else if (EST_EGAL (info->ligne_cmd[debut], "ls")) {
-        return ActionLS(info, debut, nb_arg);
-    }*/
     else if (EST_EGAL (info->ligne_cmd[debut], "set")) {
         return ActionSET(info, debut, nb_arg);
     }
