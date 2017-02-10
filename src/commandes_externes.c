@@ -9,40 +9,21 @@
 #include "parse.h"
 
 t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
-    char arguments[ARG_MAX][CHAINE_MAX];
-    char ligne[CHAINE_MAX];
-    char path[CHAINE_MAX];
     int status;
-    t_bool premierPlan;
-    int i;
     pid_t pid_fils = -1;
-
-    strcpy(ligne, "");
-    strcpy(path, "");
-
-    for (i = 0; i < nbArg; i++) {
-        if (strlen(ligne) != 0) {
-            strcat(ligne, " ");
-        }
-        strcat(ligne, info->ligne_cmd[debut + i]);
-        if (i!=0) {
-            strcpy(arguments[i-1], info->ligne_cmd[i]);
-        }
-    }
-
-    strcat(path, "bin/");
-    strcat(path, info->ligne_cmd[debut]);
     t_bool result = faux;
-
 
     if(info->modificateur[2] != TUBE) {
         pid_fils = fork();
-        if (pid_fils == 0){ //Fils
-            fork_execute(path, info, nbArg, debut);
+        if (pid_fils == -1){
+            //TODO : Ajouter printf error
+            return faux;
+        }else if (pid_fils == 0){ //Fils
+            execute(info, nbArg, debut);
         }else{
             int status;
             if ((info->modificateur[debut + 1] != ARRIERE_PLAN)) {
-                wait(&status);
+                waitpid(pid_fils,&status,0);
                 if (WIFEXITED(status)) {
                     printf("child %d exited with = %d\n", pid_fils, WEXITSTATUS(status));
                     if (WEXITSTATUS(status) == 0)   //program succeeded
@@ -61,19 +42,17 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
             }
         }
     }else{
-        fork_execute(path, info, nbArg, debut);
+        execute(info, nbArg, debut);
     }
 }
 
 
-t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
+void execute(parse_info * info, int nbArg, int debut) {
+    // On prépare la commande
     char * args[ARG_MAX];
+
+    //TODO : if ligne_cmd debut != ls ou echo
     char *cmd = info->ligne_cmd[debut];
-
-    for (int j = 0; j<nbArg; j++)
-        args[j] = info->ligne_cmd[debut+j];
-    args[nbArg] = (char *)0;
-
     if (!EST_EGAL(info->sortie, "")) {  //redirection demandée
         int sortie = open(info->sortie, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
         if (sortie != NULL) {   //si le fichier n'est pas accessible en écriture
@@ -90,7 +69,14 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
         }
     }
 
+    for (int j = 0; j<nbArg; j++)
+        args[j] = info->ligne_cmd[debut+j];
+    args[nbArg] = (char *)0;
+
+
+
     DEBUG(printf("Path : %s \n", p));
+    // TODO if ligne_cmd debut est ls on fait un execlp avec notre path
     execvp(cmd, args);
     exit(errno);
 }
