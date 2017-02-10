@@ -75,15 +75,16 @@ t_bool ecrire_variable(char *nomVar, char *valeur) {
 	if (nomVar != NULL) {	//si le nom de la variable n'est pas null
         if (valeur == NULL) {	//si l'utilisateur n'a pas rentré de valeur
             if ((setenv(nomVar, NULL, 1)) == -1) {
-                perror((const char *) errno);
+				printf("Une erreur a eu lieu : %s\n", strerror(errno));
                 return faux;
-            }
-            else
-                return vrai;
-        }
+			}
+            else {
+				return vrai;
+			}
+		}
         else {
 			if ((setenv(nomVar, valeur, 1)) == -1) {
-				perror((const char *) errno);
+				printf("Une erreur a eu lieu : %s\n", strerror(errno));
 				return faux;
 			}
 			else
