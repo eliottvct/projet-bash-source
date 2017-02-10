@@ -38,8 +38,6 @@ int main(int argc, char *argv[]) {
              * fichiers en argument, un  un (argv[i]), puis interpreter leur contenu
              * dans la boucle suivante
              */
-            //char buf[1024];
-            //strcpy(buf, argv[1]);
             entree =fopen(argv[i], "r");
             DEBUG(("argv[1] is %s\n", buf));
             (void) argv;
