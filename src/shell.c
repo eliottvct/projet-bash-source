@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
              */
             //char buf[1024];
             //strcpy(buf, argv[1]);
-            entree =fopen(argv[1], "r");
+            entree =fopen(argv[i], "r");
             DEBUG(("argv[1] is %s\n", buf));
             (void) argv;
         }
