@@ -15,7 +15,7 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
     int status;
     t_bool premierPlan;
     int i;
-
+    pid_t pid_fils = -1;
 
     strcpy(ligne, "");
     strcpy(path, "");
@@ -33,62 +33,13 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
     strcat(path, "bin/");
     strcat(path, info->ligne_cmd[debut]);
     t_bool result = faux;
-   // if(info->modificateur[debut + 2] != TUBE) {
-    //    result = fork_execute(path, info, nbArg, debut);
-    //}else{
-        char * args[ARG_MAX];
-        char *cmd = info->ligne_cmd[debut];
-        for (int j = 0; j<nbArg; j++)
-            args[j] = info->ligne_cmd[debut+j];
-        args[nbArg] = (char *)0;
-        execvp(cmd, args);
-    //}
-
-    //à revoir
-    return result;
-}
 
 
-t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
-    pid_t pid_fils = -1;
-    char * args[ARG_MAX];
-    char *cmd = info->ligne_cmd[debut];
-
-
-    for (int j = 0; j<nbArg; j++)
-        args[j] = info->ligne_cmd[debut+j];
-    args[nbArg] = (char *)0;
-
-    pid_fils = fork();
-    switch(pid_fils) {
-        case -1:
-            perror("Echec du fork\n");
-            exit(EXIT_FAILURE);
-            break;
-
-        case 0:
-            if (!EST_EGAL(info->sortie, "")) {  //redirection demandée
-                int sortie = open(info->sortie, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
-                if (sortie != NULL) {   //si le fichier n'est pas accessible en écriture
-                    dup2(sortie,1);
-                    close(sortie);
-                }
-            }
-
-            if (!EST_EGAL(info->entree, "")) {  //redirection demandée
-                int entree = open(info->entree, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
-                if (entree != NULL) {   //si le fichier n'est pas accessible en écriture
-                    dup2(entree,0);
-                    close(entree);
-                }
-            }
-
-            DEBUG(printf("Path : %s \n", p));
-            execvp(cmd, args);
-            exit(errno);
-            break;
-
-        default: {
+    if(info->modificateur[2] != TUBE) {
+        pid_fils = fork();
+        if (pid_fils == 0){ //Fils
+            fork_execute(path, info, nbArg, debut);
+        }else{
             int status;
             if ((info->modificateur[debut + 1] != ARRIERE_PLAN)) {
                 wait(&status);
@@ -109,5 +60,37 @@ t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
                 }
             }
         }
+    }else{
+        fork_execute(path, info, nbArg, debut);
     }
+}
+
+
+t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut) {
+    char * args[ARG_MAX];
+    char *cmd = info->ligne_cmd[debut];
+
+    for (int j = 0; j<nbArg; j++)
+        args[j] = info->ligne_cmd[debut+j];
+    args[nbArg] = (char *)0;
+
+    if (!EST_EGAL(info->sortie, "")) {  //redirection demandée
+        int sortie = open(info->sortie, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+        if (sortie != NULL) {   //si le fichier n'est pas accessible en écriture
+            dup2(sortie,1);
+            close(sortie);
+        }
+    }
+
+    if (!EST_EGAL(info->entree, "")) {  //redirection demandée
+        int entree = open(info->entree, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+        if (entree != NULL) {   //si le fichier n'est pas accessible en écriture
+            dup2(entree,0);
+            close(entree);
+        }
+    }
+
+    DEBUG(printf("Path : %s \n", p));
+    execvp(cmd, args);
+    exit(errno);
 }

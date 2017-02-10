@@ -53,19 +53,10 @@ void execution_ligne_cmd(parse_info *info) {
             /* il faut traiter (par simplification uniquement pour deux commandes)
              * le cas de la communication via un tube
              */
-            char *arg1[3];
-            char *arg2[4];
-
-            arg1[0] = "/bin/cat";
-            arg1[1] = "fichier";
-            arg1[2] = NULL;
-            arg2[0] = "/bin/grep";
-            arg2[1] = "thomas";
-            arg2[2] = "-c";
-            arg2[3] = NULL;
             int p[2];
             pipe(p);
             pid_t pid_fils1 = -1;
+
             if ((pid_fils1=fork()) < 0){
 
             }
@@ -74,8 +65,7 @@ void execution_ligne_cmd(parse_info *info) {
                 dup2(p[1], 1);
                 close(p[1]);
                 execution_cmd(info, i, nb_arg);
-            }
-            if(pid_fils1) {
+            }else{
                 pid_t pid_fils2 = -1;
                 if ((pid_fils2=fork()) < 0) {
 
@@ -93,8 +83,8 @@ void execution_ligne_cmd(parse_info *info) {
                 close(p[1]);
                 int status;
                 waitpid(pid_fils2, &status, 0);
-                printf("Fini");
-                exit(0);
+                waitpid(pid_fils1, &status, 0);
+                j = info->nb_arg;
             }
         } else {
             resultat = execution_cmd(info, i, nb_arg);
@@ -143,10 +133,12 @@ void execution_ligne_cmd(parse_info *info) {
 }
 
 t_bool execution_cmd(parse_info *info, int debut, int nb_arg) {
+    /*
     if (EST_EGAL(info->ligne_cmd[debut], "echo")) {
         return ActionECHO(info, debut, nb_arg);
     }
-    else if (EST_EGAL (info->ligne_cmd[debut], "cd")) {
+    else */
+    if (EST_EGAL (info->ligne_cmd[debut], "cd")) {
         return ActionCD(info, debut, nb_arg);
     }
     /*else if (EST_EGAL (info->ligne_cmd[debut], "ls")) {
