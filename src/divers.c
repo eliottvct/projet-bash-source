@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
 #include "divers.h"
 #include "entities.c"
 
@@ -71,11 +72,25 @@ void AfficheInvite() {
 }
 
 t_bool ecrire_variable(char *nomVar, char *valeur) {
-	if (valeur == NULL)
-		setenv(nomVar, "", 1);
-	else
-	    setenv(nomVar, valeur, 1);
-	return vrai;
+	if (nomVar != NULL) {
+        if (valeur == NULL) {
+            if ((setenv(nomVar, NULL, 1)) == -1) {
+                perror((const char *) errno);
+                return faux;
+            }
+            else
+                return vrai;
+        }
+        else
+        if ((setenv(nomVar, valeur, 1)) == -1) {
+            perror((const char *) errno);
+            return faux;
+        }
+        else
+            return vrai;
+    }
+    else
+        return faux;
 }
 
 t_bool lire_variable(char *nomVar, char *valeur, int taille) {
