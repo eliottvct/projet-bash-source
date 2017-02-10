@@ -72,8 +72,8 @@ void AfficheInvite() {
 }
 
 t_bool ecrire_variable(char *nomVar, char *valeur) {
-	if (nomVar != NULL) {
-        if (valeur == NULL) {
+	if (nomVar != NULL) {	//si le nom de la variable n'est pas null
+        if (valeur == NULL) {	//si l'utilisateur n'a pas rentré de valeur
             if ((setenv(nomVar, NULL, 1)) == -1) {
                 perror((const char *) errno);
                 return faux;
@@ -81,13 +81,14 @@ t_bool ecrire_variable(char *nomVar, char *valeur) {
             else
                 return vrai;
         }
-        else
-        if ((setenv(nomVar, valeur, 1)) == -1) {
-            perror((const char *) errno);
-            return faux;
-        }
-        else
-            return vrai;
+        else {
+			if ((setenv(nomVar, valeur, 1)) == -1) {
+				perror((const char *) errno);
+				return faux;
+			}
+			else
+				return vrai;
+		}
     }
     else
         return faux;
