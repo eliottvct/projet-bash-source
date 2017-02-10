@@ -11,10 +11,11 @@ t_bool ActionECHO(parse_info *info, int debut, int nbArg) {
     int i;
     FILE *sortie;
 
-    if (!EST_EGAL(info->sortie, "")) {  //redirection demandée
+    //si une redirection est demandée
+    if (!EST_EGAL(info->sortie, "")) {
         sortie = fopen(info->sortie,"w");
         if (sortie == NULL) {   //si le fichier n'est pas accessible en écriture
-
+            return faux;
         }
     }
     else {  //aucune redirection demandée
@@ -28,13 +29,12 @@ t_bool ActionECHO(parse_info *info, int debut, int nbArg) {
     }
     printf("\n");
 
-    if (! EST_EGAL(info->sortie, "")) {
+    //si aucune redirection n'est demandée
+    if (!EST_EGAL(info->sortie, "")) {
         fclose(sortie); //fermeture de la sortie (uniquement pour le fichier)
     }
-
     return vrai;
 }
-
 
 
 t_bool ActionSET(parse_info *info, int debut, int nbArg) {
@@ -58,6 +58,7 @@ t_bool ActionSET(parse_info *info, int debut, int nbArg) {
 
 t_bool ActionCD(parse_info *info, int debut, int nbArg) {
 
+    //TODO : redirection sortie
     char def[MAX_PATH];
     char dirName[MAX_PATH];
     int i;

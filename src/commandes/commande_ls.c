@@ -25,7 +25,12 @@ int main(int argc, char *argv[]) {
             printf( "argv[%d] = %s\n", i, argv[i]);
         }*/
         //TODO : chemin absolu en arg
-        if ((*argv[1] = (char) "-la")) {
+        //TODO : rajouter tri alphabetique
+
+
+
+
+        /*if ((*argv[1] = (char) "-la")) {
             while ((dir = readdir(d)) != NULL) {
                 printf("%s\n", dir->d_name);
             }
@@ -34,13 +39,17 @@ int main(int argc, char *argv[]) {
             while ((dir = readdir(d)) != NULL) {
                 printf("%s", dir->d_name);
             }
+
+        }*/
+        while ((dir = readdir(d)) != NULL) {
+
+            if ((*argv[1] = (char) "-la")) {
+                printf("%s\n", dir->d_name);
+            }
+            else {
+                printf("%s", dir->d_name);
+            }
         }
-        //switch(*argv[1]) {
-//        if (*argv[1] = (char) "-la") {
-//            printf("la");
-//
-//
-//        }
         closedir(d);
         return 0;
     }
