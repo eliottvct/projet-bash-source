@@ -11,6 +11,9 @@
 
 
 int main(int argc, char *argv[]) {
+    char var[CHAINE_MAX];
+    getcwd(var, sizeof(var));
+    ecrire_variable("PROJECT_PATH", var);
 
     DEBUG(printf("%s", argv[0]));
     char ligne_cmd[CHAINE_MAX];
