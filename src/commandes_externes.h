@@ -7,8 +7,7 @@
 pid_t pid_fils;
 
 t_bool ActionEXEC(parse_info *info, int debut, int nbArg);
-t_bool pereEtFils();
-t_bool dummyExecute(parse_info *info);
-t_bool fork_execute(char * p, parse_info * info, int nbArg, int debut);
+
+void execute(parse_info * info, int nbArg, int debut);
 
 #endif
