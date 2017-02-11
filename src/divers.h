@@ -23,8 +23,8 @@ void AfficheInvite();
 
 t_bool ecrire_variable(char *nomVar, char *valeur);
 
-t_bool lire_variable(char *nomVar, char *valeur, int taille);
+t_bool lire_variable(char *nomVar, char *valeur);
 
-char *replace_str(char *str, char *orig, char *rep);
+char *editwd(char *wd, char *home);
 
 #endif

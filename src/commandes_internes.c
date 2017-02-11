@@ -64,7 +64,7 @@ t_bool ActionCD(parse_info *info, int debut, int nbArg) {
     int i;
 
     if (nbArg == 1) {
-        lire_variable("HOME", def, sizeof(def));
+        lire_variable("HOME", def);
         if (chdir(def) == -1) {
             DEBUG(printf("Impossible de changer vers le repertoire '%s' \n", def));
             return faux;

@@ -62,7 +62,7 @@ parse_info *parse(char *ligne_cmd) {
              */
 
             //info->modificateur[i] = VARIABLE;
-            lire_variable(&(tok[1]), info->ligne_cmd[i], sizeof(info->ligne_cmd[i]));
+            lire_variable(&(tok[1]), info->ligne_cmd[i]);
             i++;
         } else {
             strcpy(info->ligne_cmd[i], tok);

@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     t_bool mode_interactif = (argc == 1);   //si c'est true, alors on est en mode interactif
 
     if (mode_interactif) {
-        lire_variable("OS", verOS, sizeof(verOS));
+        lire_variable("OS", verOS);
         DEBUG(printf("imrShell - %s\n", (char *) verOS));
         DEBUG(printf("Programmation Systeme Windows - IMR 1\n"));
         fflush(stdout);
