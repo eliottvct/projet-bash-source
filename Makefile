@@ -5,7 +5,7 @@
 
 
 #Nom du project
-TARGETS = shell
+TARGETS = projet-bash-source
 
 ##############
 # Constantes #
@@ -27,7 +27,7 @@ BINTGTS = ${TARGETS:%=${BIN}/%}
 CC = gcc
 
 # Options
-CFLAGS = -O0 -g -W -Wall -Wextra -Wconversion -Werror -mtune=native  -march=native  -std=c99
+CFLAGS = -O0 -g -W -Wall -Wextra -Wconversion -Werror -mtune=native  -march=native  -std=c99  -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700
 LDFLAGS = -lm -W -Wall -pedantic -L. -lm
 
 # Fichiers
