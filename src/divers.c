@@ -48,7 +48,6 @@ void AfficheInvite() {
 						else {
                             lire_variable("HOME", home);
 							strcpy(var, editwd(var, home));
-                            //strcpy(var, replace_str(var, home, "~"));
                         }
                         break;
 					default :
@@ -116,8 +115,12 @@ t_bool lire_variable(char *nomVar, char *valeur) {
 
 char *editwd(char *wd, char *home) {
 	static char buffer[4096];
-	strcpy(buffer, "~");
-	wd += strlen(home);
-	strcat(buffer, wd);
-	return buffer;
+	if (COMMENCE_PAR(wd, home)) {
+		strcpy(buffer, "~");
+		wd += strlen(home);
+		strcat(buffer, wd);
+		return buffer;
+	}
+	else
+		return wd;
 }
