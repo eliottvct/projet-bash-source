@@ -32,7 +32,7 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
                     //exit(WEXITSTATUS(status));
                 }
                 if(WIFSIGNALED(status)) {
-                    printf("Le processus %d est mort: signal %d%s\n", pid_fils, WTERMSIG(status), WCOREDUMP(status) ? " - core dumped" : "");
+                    printf("Le processus %d est mort: signal %d\n", pid_fils, WTERMSIG(status));
                     return faux;
                 }
                 else//program exited abnormally
@@ -42,19 +42,18 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
     }
     else
         execute(info, nbArg, debut);
+    return vrai;    //TODO : à modifier
 }
 
 
 void execute(parse_info * info, int nbArg, int debut) {
-    // On prépare la commande
-    char *args[ARG_MAX];
 
-    //TODO : if ligne_cmd debut != ls ou echo
+    char *args[ARG_MAX];
     char *cmd = info->ligne_cmd[debut];
 
     if (!EST_EGAL(info->sortie, "")) {  //redirection demandée
         int sortie = open(info->sortie, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-        if (sortie != NULL) {   //si le fichier n'est pas accessible en écriture
+        if (sortie != 0) {   //si le fichier n'est pas accessible en écriture
             dup2(sortie, 1);
             close(sortie);
         }
@@ -62,7 +61,7 @@ void execute(parse_info * info, int nbArg, int debut) {
 
     if (!EST_EGAL(info->entree, "")) {  //redirection demandée
         int entree = open(info->entree, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-        if (entree != NULL) {   //si le fichier n'est pas accessible en écriture
+        if (entree != 0) {   //si le fichier n'est pas accessible en écriture
             dup2(entree, 0);
             close(entree);
         }

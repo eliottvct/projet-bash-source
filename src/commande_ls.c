@@ -31,8 +31,6 @@ int main(int argc, char *argv[]) {
     DIR *d;
     struct dirent *dir;
     struct stat stats;
-    struct dirent *array_of_dir[512];
-    struct stat array_of_stat[512];
 
     bool L_OPTION = false;
     bool A_OPTION = false;
@@ -70,13 +68,13 @@ int main(int argc, char *argv[]) {
                 /* nom */
                 char *name[512];
                 if (S_ISDIR(stats.st_mode))
-                    strcpy(name, BLU);
+                    strcpy((char *) name, BLU);
                 else if (access(dir->d_name, F_OK|X_OK) == 0)
-                    strcpy(name, GRN);
+                    strcpy((char *) name, GRN);
                 else
-                    strcpy(name, RESET);
-                strcat(name, dir->d_name);
-                strcat(name, RESET);
+                    strcpy((char *) name, RESET);
+                strcat((char *) name, dir->d_name);
+                strcat((char *) name, RESET);
 
                 if (L_OPTION) {
                     if (A_OPTION || !(COMMENCE_PAR(dir->d_name, "."))) {
@@ -94,16 +92,16 @@ int main(int argc, char *argv[]) {
 
                         /* permissions */
                         char *permissions[32];
-                        strcpy((char *) permissions, (char *) (S_ISDIR(stats.st_mode)) ? "d" : "-"); //condition ternaire
-                        strcat((char *) permissions, (char *) (stats.st_mode & S_IRUSR) ? "r" : "-");
-                        strcat((char *) permissions, (char *) (stats.st_mode & S_IWUSR) ? "w" : "-");
-                        strcat((char *) permissions, (char *) (stats.st_mode & S_IXUSR) ? "x" : "-");
-                        strcat((char *) permissions, (char *) (stats.st_mode & S_IRGRP) ? "r" : "-");
-                        strcat((char *) permissions, (char *) (stats.st_mode & S_IWGRP) ? "w" : "-");
-                        strcat((char *) permissions, (char *) (stats.st_mode & S_IXGRP) ? "x" : "-");
-                        strcat((char *) permissions, (char *) (stats.st_mode & S_IROTH) ? "r" : "-");
-                        strcat((char *) permissions, (char *) (stats.st_mode & S_IWOTH) ? "w" : "-");
-                        strcat((char *) permissions, (char *) (stats.st_mode & S_IXOTH) ? "x " : "- ");
+                        strcpy((char *) permissions, (char *) (intptr_t) (S_ISDIR(stats.st_mode)) ? "d" : "-"); //condition ternaire
+                        strcat((char *) permissions, (char *) (intptr_t) (stats.st_mode & S_IRUSR) ? "r" : "-");
+                        strcat((char *) permissions, (char *) (intptr_t) (stats.st_mode & S_IWUSR) ? "w" : "-");
+                        strcat((char *) permissions, (char *) (intptr_t) (stats.st_mode & S_IXUSR) ? "x" : "-");
+                        strcat((char *) permissions, (char *) (intptr_t) (stats.st_mode & S_IRGRP) ? "r" : "-");
+                        strcat((char *) permissions, (char *) (intptr_t) (stats.st_mode & S_IWGRP) ? "w" : "-");
+                        strcat((char *) permissions, (char *) (intptr_t) (stats.st_mode & S_IXGRP) ? "x" : "-");
+                        strcat((char *) permissions, (char *) (intptr_t) (stats.st_mode & S_IROTH) ? "r" : "-");
+                        strcat((char *) permissions, (char *) (intptr_t) (stats.st_mode & S_IWOTH) ? "w" : "-");
+                        strcat((char *) permissions, (char *) (intptr_t) (stats.st_mode & S_IXOTH) ? "x " : "- ");
 
                         printf("%s %d %s %-8d %-10s %s\n", (char *) permissions, (int) stats.st_nlink, pInfo->pw_name, (int) stats.st_size, time, (char *) name);
                     }

@@ -85,7 +85,7 @@ t_bool ActionCD(parse_info *info, int debut, int nbArg) {
 
 }
 
-t_bool ActionPWD(parse_info *info, int debut, int nbArg) {
+t_bool ActionPWD() {
     char wd[MAX];
     wd[MAX-1] = '\0';
 

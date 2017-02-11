@@ -12,6 +12,6 @@ t_bool ActionCD(parse_info *info, int debut, int nbArg);
 
 t_bool ActionLS(parse_info *info, int debut, int nbArg);
 
-t_bool ActionPWD(parse_info *info, int debut, int nbArg);
+t_bool ActionPWD();
 
 #endif
