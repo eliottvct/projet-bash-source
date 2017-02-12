@@ -21,4 +21,7 @@
 #define CHAINE_MAX 512
 
 
+
+void list_content(char *dir, bool L_OPTION, bool A_OPTION);
+
 #endif //PROJET_BASH_SOURCE_COMMANDE_LS_H

@@ -16,14 +16,11 @@
 
 int main(int argc, char *argv[]) {
 
-    bool A_OPTION = false;
     bool L_OPTION = false;
-    bool PATH_OPTION = false;
+    bool A_OPTION = false;
 
-    DIR *d;
-    struct dirent *dir;
-    struct stat stats;
-    char* folder=".";
+    char folder[CHAINE_MAX];
+    strcpy(folder, ".");
     char custom_path[CHAINE_MAX];
 
     for( int i = 0; i < argc; ++i ) {
@@ -41,21 +38,22 @@ int main(int argc, char *argv[]) {
             }
         }
         else if(i != 0) {
-            PATH_OPTION = true;
             printf("other : %s\n", argv[i]);
-            strcpy(custom_path, argv[i]);
+            strcpy(folder, argv[i]);
         }
     }
 
-    if (PATH_OPTION) {
-        if ((d = opendir(custom_path)) == NULL) {
-            printf("Le chemin %s est incorrect.", custom_path);
-            return 1;
-        }
-    }
-    else if ((d = opendir(folder)) == NULL) {
-        perror ("Failed to open directory");
-        return 1;
+    list_content(folder, L_OPTION, A_OPTION);
+    return 0;
+}
+
+void list_content(char *folder, bool L_OPTION, bool A_OPTION) {
+    DIR *d;
+    struct dirent *dir;
+    struct stat stats;
+
+    if ((d = opendir(folder)) == NULL) {
+        printf("Erreur");
     }
     while ((dir = readdir(d)) != NULL) {
         char *dwRet;
@@ -111,5 +109,4 @@ int main(int argc, char *argv[]) {
     }
 
     closedir(d);
-    return 0;
 }
