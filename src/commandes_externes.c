@@ -74,7 +74,7 @@ void execute(parse_info * info, int nbArg, int debut) {
     if (EST_EGAL(cmd, "ls")) {
         char chemin_commande[CHAINE_MAX];
         lire_variable("PROJECT_PATH", chemin_commande);
-        strcat(chemin_commande, "/commande_ls");
+        strcat(chemin_commande, "/ls");
         printf("le chemin de la commande est : %s\n", chemin_commande);
         execv(chemin_commande, args);
         exit(errno);
