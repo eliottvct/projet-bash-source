@@ -4,8 +4,6 @@
 #include "divers.h"
 #include "parse.h"
 
-pid_t pid_fils;
-
 t_bool ActionEXEC(parse_info *info, int debut, int nbArg);
 
 void execute(parse_info * info, int nbArg, int debut);

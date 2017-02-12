@@ -8,20 +8,17 @@
 #define COMMENCE_PAR(a, b)    (strncmp((a), (b), strlen((b)))==0)
 #define EST_EGAL(a, b)        (strlen((a))==strlen((b)) && COMMENCE_PAR((a),(b)))
 
-
-#define RED   "\x1B[31m"
+/* Définition des balises de couleur */
 #define GRN   "\x1B[32m"
-#define YEL   "\x1B[33m"
 #define BLU   "\x1B[34m"
-#define MAG   "\x1B[35m"
-#define CYN   "\x1B[36m"
-#define WHT   "\x1B[37m"
 #define RESET "\x1B[0m"
 
 #define CHAINE_MAX 512
 
+typedef enum {
+    faux = 0, vrai
+} t_bool;
 
-
-void list_content(char *dir, bool L_OPTION, bool A_OPTION);
+t_bool lister_contenu(char *chemin, bool L_OPTION, bool A_OPTION);
 
 #endif //PROJET_BASH_SOURCE_COMMANDE_LS_H
