@@ -45,7 +45,7 @@ t_bool ActionSET(parse_info *info, int debut, int nbArg) {
         return ecrire_variable(info->ligne_cmd[debut + 1], info->ligne_cmd[debut + 3]);
     }
     else if (nbArg == 3) {  //si l'utilisateur a saisi 3 arguments
-        return ecrire_variable(info->ligne_cmd[debut + 1], NULL);   //alors la variable n'aura pas de valeur (d'où le NULL)
+        return ecrire_variable(info->ligne_cmd[debut + 1], "");   //alors la variable n'aura pas de valeur (d'où le NULL)
     }
     else {
         return faux;
