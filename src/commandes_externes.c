@@ -10,39 +10,40 @@
 
 t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
     pid_t pid_fils = -1;
+    t_bool resultat = faux;
 
-    if(info->modificateur[2] != TUBE) {
-        pid_fils = fork();
-        if (pid_fils == -1) {
+    if(info->modificateur[2] == TUBE) { //si la ligne saisie par l'utilisateur contient un tube "|"
+        execute(info, nbArg, debut);    //on exécute directment la commande
+    }
+    else {
+        pid_fils = fork();  //on créé un fils grâce à fork()
+        if (pid_fils == -1) {   //erreur lors du fork
             printf("Une erreur a eu lieu : %s\n", strerror(errno));
-            return faux;
+            resultat = faux;
         }
-        else if (pid_fils == 0) //Fils
-            execute(info, nbArg, debut);
-        else {
+        else if (pid_fils == 0) //on se trouve dans le fils
+            execute(info, nbArg, debut);    //on lance l'exécution de la commande
+        else {  //on se trouve dans le père
             int status;
-            if ((info->modificateur[debut + 1] != ARRIERE_PLAN)) {
-                waitpid(pid_fils,&status,0);
-                if (WIFEXITED(status)) {
-                    DEBUG(printf("child %d exited with = %d\n", pid_fils, WEXITSTATUS(status)));
-                    if (WEXITSTATUS(status) == 0)   //program succeeded
-                        return vrai;
-                    else    //program failed but exited normally
-                        return faux;
-                    //exit(WEXITSTATUS(status));
+            if ((info->modificateur[debut + 1] != ARRIERE_PLAN)) {  //si la commande n'est pas éxécutée en arrière plan
+                waitpid(pid_fils, &status, 0);   //alors on attend la fin de son exécution et on récupère son statut de retour
+                if (WIFEXITED(status)) {    //
+                    DEBUG(printf("Le fils %d s'est terminé avec = %d\n", pid_fils, WEXITSTATUS(status)));
+                    if (WEXITSTATUS(status) == 0)   //la commande s'est terminée sans erreur
+                        resultat = vrai;
+                    else    //la commande a échoué mais s'est terminée normalement
+                        resultat = faux;
                 }
                 if (WIFSIGNALED(status)) {
                     DEBUG(printf("Le processus %d est mort: signal %d\n", pid_fils, WTERMSIG(status)));
-                    return faux;
+                    resultat = faux;
                 }
-                else//program exited abnormally
-                    return faux;
+                else    //la commande s'est terminée anormalement
+                    resultat = faux;
             }
         }
     }
-    else
-        execute(info, nbArg, debut);
-    return vrai;    //TODO : à modifier
+    return resultat;
 }
 
 
@@ -67,20 +68,19 @@ void execute(parse_info * info, int nbArg, int debut) {
         }
     }
 
-    for (int j = 0; j < nbArg; j++)
-        args[j] = info->ligne_cmd[debut + j];
-    args[nbArg] = (char *) 0;
+    for (int j = 0; j < nbArg; j++) //pour chaque argument
+        args[j] = info->ligne_cmd[debut + j];   //on l'ajoute au tableau d'arguments
+    args[nbArg] = (char *) 0;   //on conclue en fermant le tableau
 
-    if (EST_EGAL(cmd, "ls")) {
-        char chemin_commande[CHAINE_MAX];
-        lire_variable("PROJECT_PATH", chemin_commande);
-        strcat(chemin_commande, "/ls");
-        //printf("le chemin de la commande est : %s\n", chemin_commande);
-        execv(chemin_commande, args);
+    if (EST_EGAL(cmd, "ls")) {  //si la commande à exécuter est "ls"
+        char chemin_commande_ls[CHAINE_MAX];    //alors on recherche le chemin de cette commande "spéciale", sauvegardé au lancement du shell
+        lire_variable("PROJECT_PATH", chemin_commande_ls);
+        strcat(chemin_commande_ls, "/ls");
+        execv(chemin_commande_ls, args);    //on exécute cette commande avec la primitive execv() en lui passant le chemin et les arguments
         exit(errno);
     }
     else {
-        execvp(cmd, args);
+        execvp(cmd, args);  //on exécute la commande avec la primitive execvp() en lui passant le nom de la commande et les arguments
         exit(errno);
     }
 }
