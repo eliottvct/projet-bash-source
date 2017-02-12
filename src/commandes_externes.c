@@ -53,17 +53,22 @@ void execute(parse_info * info, int nbArg, int debut) {
     char *cmd = info->ligne_cmd[debut];
 
     if (!EST_EGAL(info->sortie, "")) {  //redirection demandée
-        int sortie = open(info->sortie, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-        if (sortie != 0) {   //si le fichier n'est pas accessible en écriture
-            dup2(sortie, 1);
+        int sortie;
+        if (info->modificateur[1] == REDIRECTION_SORTIE_AJOUT){ //Si la redirection demandée est une sortie en ajout
+            sortie = open(info->sortie, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH); //On ouvre le fichier avec le macro O_APPEND
+        }else{
+            sortie = open(info->sortie, O_CREAT | O_RDWR | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH); //Sinon on ouvre le fichier avec le macro O_TRUNC
+        }
+        if (sortie != 0) {   // On vérifie que le fichier est bien accessible en écriture
+            dup2(sortie, 1); // On utilise la primitive dup2, le descripteur de fichier du fichier et stdout(1) peuvent maintenant être utilisés de manière interchangeable
             close(sortie);
         }
     }
 
     if (!EST_EGAL(info->entree, "")) {  //redirection demandée
-        int entree = open(info->entree, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-        if (entree != 0) {   //si le fichier n'est pas accessible en écriture
-            dup2(entree, 0);
+        int entree = open(info->entree, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH); //On ouvre le fichier
+        if (entree != 0) {   //On vérifie que le fichier est bien accessible en écriture
+            dup2(entree, 0); // On utilise la primitive dup2, le descripteur de fichier du fichier et stdin(0) peuvent maintenant être utilisés de manière interchangeable
             close(entree);
         }
     }

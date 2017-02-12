@@ -38,6 +38,9 @@ void execution_ligne_cmd(parse_info *info) {
                 case REDIRECTION_SORTIE:
                     strcpy(info->sortie, info->ligne_cmd[j]);
                     break;
+                case REDIRECTION_SORTIE_AJOUT:
+                    strcpy(info->sortie, info->ligne_cmd[j]);
+                    break;
                 case ARRIERE_PLAN:
                     info->modificateur[i] = ARRIERE_PLAN;
                     break;
@@ -55,37 +58,37 @@ void execution_ligne_cmd(parse_info *info) {
              * le cas de la communication via un tube
              */
             int p[2];
-            pipe(p);
+            pipe(p); //La primitive système pipe se charge de créer le fichier d'échange
             pid_t pid_fils1 = -1;
 
             if ((pid_fils1=fork()) < 0) {
                 printf("Une erreur a eu lieu : %s\n", strerror(errno));
             }
-            if (!pid_fils1) {   //si on est dans le fils
+            if (!pid_fils1) {   //si on est dans le fils 1
                 close(p[0]);    //on ferme le côté "lecture" du pipe
-                dup2(p[1], 1);
+                dup2(p[1], 1); //on "fusionne" le côté "écriture" du pipe avec stdout
                 close(p[1]);
-                execution_cmd(info, i, nb_arg);
+                execution_cmd(info, i, nb_arg); //on exécute la première commande
             } else {
                 pid_t pid_fils2 = -1;
                 if ((pid_fils2=fork()) < 0) {
-
+                    printf("Une erreur a eu lieu : %s\n", strerror(errno));
                 }
-                if (!pid_fils2) {
-                    close(p[1]);
-                    dup2(p[0], 0);
+                if (!pid_fils2) { //si on est dans le fils2
+                    close(p[1]); //on ferme le côté "écriture" du pipe
+                    dup2(p[0], 0); //on "fusionne" le côté "lecture" avec stdin
                     close(p[0]);
                     while (j < info->nb_arg && (info->modificateur[j] != EXECUTION && info->modificateur[j] != TUBE)) {
                         j++;
                     }
-                    execution_cmd(info, j, (info->nb_arg-nb_arg));
+                    execution_cmd(info, j, (info->nb_arg-nb_arg)); //on exécute la deucième commande
                 }
                 close(p[0]);
                 close(p[1]);
                 int status;
-                waitpid(pid_fils2, &status, 0);
-                waitpid(pid_fils1, &status, 0);
-                j = info->nb_arg;
+                waitpid(pid_fils2, &status, 0); //on attend le deuxième fils
+                waitpid(pid_fils1, &status, 0); //on attend le premier fils
+                j = info->nb_arg; //on passe la valeur de info->nb_arg à j pour ne pas de reboucler
             }
         } else {
             resultat = execution_cmd(info, i, nb_arg);
