@@ -5,7 +5,8 @@
 
 
 #Nom du project
-TARGETS = projet-bash-source
+TARGET_SHELL = shell
+TARGET_LS = ls
 
 ##############
 # Constantes #
@@ -21,7 +22,8 @@ DIRLIST = ${SOURCE} ${BIN}
 #DIRLIST = ${SOURCE} ${BIN} ${OPT} ${DEP}
 
 # Cibles
-BINTGTS = ${TARGETS:%=${BIN}/%}
+BINSHELL = ${TARGET_SHELL:%=${BIN}/%}
+BINLS = ${TARGET_LS:%=${BIN}/%}
 
 # Commandes
 CC = gcc
@@ -32,17 +34,19 @@ LDFLAGS = -lm -W -Wall -pedantic -L. -lm
 
 # Fichiers
 DOX = ${wildcard ${DOCPATH}/*.dox} # Sources
-SRC = ${wildcard ${SOURCE}/*.c} # Sources
-INT = ${wildcard ${SOURCE}/*.h} # Interfaces
-OBJ = ${SRC:%.c=%.o}	 	# Objets
-
+SRC_SHELL = ${wildcard ${SOURCE}/divers.c ${SOURCE}/commandes_externes.c ${SOURCE}/commandes_internes.c ${SOURCE}/entities.c ${SOURCE}/execution.c ${SOURCE}/parse.c ${SOURCE}/shell.c} # Sources
+SRC_LS = ${wildcard ${SOURCE}/commande_ls.c}
+INT_SHELL = ${wildcard ${SOURCE}/divers.h ${SOURCE}/commandes_externes.h ${SOURCE}/commandes_internes.h ${SOURCE}/execution.h ${SOURCE}/parse.h} # Interfaces
+INT_LS = ${wildcard ${SOURCE}/commande_ls.h}
+OBJ_SHELL = ${SRC_SHELL:%.c=%.o}	 	# Objets
+OBJ_LS = ${SRC_LS:%.c=%.o}
 
 ##########
 # Regles #
 ##########
 
 # ALL
-all : ${BINTGTS} 
+all : ${BINSHELL} ${BINLS}
 
 # CLEAN
 clean :
@@ -50,7 +54,8 @@ clean :
 	@echo Cleaning : object files
 	@echo --------
 	@echo
-	rm -f ${OBJ}
+	rm -f ${OBJ_SHELL}
+	rm -f ${OBJ_LS}
 
 clean-doc :
 	@echo
@@ -74,7 +79,8 @@ clean-bin :
 	@echo Cleaning : binaries
 	@echo --------
 	@echo
-	rm -f ${BINTGTS}
+	rm -f ${BINSHELL}
+	rm -f ${BINLS}
 
 distclean : clean clean-emacs clean-bin
 
@@ -94,9 +100,10 @@ dirs :
 	done
 
 # Binaires
-${BIN}/${TARGETS} : ${${TARGETS}:%=${SOURCE}/%}
+${BIN}/${TARGET_SHELL} : ${${TARGET_SHELL}:%=${SOURCE}/%}
+${BIN}/${TARGET_LS} : ${${TARGET_LS}:%=${SOURCE}/%}
 
-${BIN}/% : $(OBJ) 
+${BIN}/% : $(OBJ_SHELL)
 	@echo
 	@echo Linking bytecode : $@
 	@echo ----------------
