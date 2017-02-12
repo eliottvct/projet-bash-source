@@ -3,6 +3,7 @@
 
 ### Description
 
+Ce projet développé en C consiste en un shell simplifié. Il fonctionne comme un shell "normal" Unix, mais à quelques limites (pas de gestion des travaux, tubes limités).
 
 ### Installation
 
@@ -29,7 +30,7 @@ On peut également exécuter le terminal en lui passant des scripts :
 
 ```sh
 $ cd bin/
-$ ./shell ../script
+$ ./shell ../script.txt
 ```
 
 License
