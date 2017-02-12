@@ -33,21 +33,21 @@ void AfficheInvite() {
 						lire_variable("USER", var);
 						break;
 					case 'h' :
-                        gethostname(host, sizeof(host));	//on récupère le nom de la machine grâce à la fonction C gethostname()
-                        ecrire_variable("HOSTNAME", host);
-						lire_variable("HOSTNAME", var);
+                        gethostname(host, sizeof(host));	//on récupère le nom de la machine grâce à la fonction gethostname()
+                        ecrire_variable("HOSTNAME", host);	//on stocke ce nom dans une variable d'environnement
+						strcpy(var, host);	//et on la copie dans notre variable "var"
 						break;
 					case 's' :
 						strcpy(var, " ");
 						break;
 					case 'p' :
-						if ((dwRet = getcwd(var, sizeof(var))) == NULL) {
+						if ((dwRet = getcwd(var, sizeof(var))) == NULL) {	//on récupère le chemin du répertoire courant grâce à la fonction getcwd()
 							fprintf(stderr, "Echec lors de l'appel a getcwd !\n");
 							fflush(stderr);
 						}
 						else {
-                            lire_variable("HOME", home);
-							strcpy(var, editwd(var, home));
+                            lire_variable("HOME", home);	//on récupère la variable "HOME"
+							strcpy(var, simplify_wd(var, home));	//on fait appel à la fonction simplify_wd()
                         }
                         break;
 					default :
@@ -72,23 +72,12 @@ void AfficheInvite() {
 
 t_bool ecrire_variable(char *nomVar, char *valeur) {
 	if (nomVar != NULL) {	//si le nom de la variable n'est pas null
-        if (valeur == NULL) {	//si l'utilisateur n'a pas rentré de valeur
-            if ((setenv(nomVar, "", 1)) == -1) {
-				printf("Une erreur a eu lieu : %s\n", strerror(errno));
-                return faux;
-			}
-            else {
-				return vrai;
-			}
-		}
-        else {
-			if ((setenv(nomVar, valeur, 1)) == -1) {
+         if ((setenv(nomVar, valeur, 1)) == -1) {	//on enregistre la valeur dans une variable d'environnement
 				printf("Une erreur a eu lieu : %s\n", strerror(errno));
 				return faux;
 			}
 			else
 				return vrai;
-		}
     }
     else
         return faux;
@@ -99,28 +88,29 @@ t_bool lire_variable(char *nomVar, char *valeur) {
 
 	DEBUG(printf("------------ Début de lire_variable() avec \"%s\", \"%s\"\n", nomVar, valeur));
 
-	const char* pPath = getenv(nomVar);
-	if (pPath!=NULL) {
-		DEBUG(printf ("Variable found: %s \n", pPath));
-		strcpy(valeur, pPath);
-        DEBUG(printf("------------ Fin de lire_variable() \n"));
-        return vrai;
+	const char* pPath = getenv(nomVar);	//on tente de récupérer la variable d'environnement
+	if (pPath == NULL) {
+		DEBUG(printf("Variable non trouvée\n"));
+		DEBUG(printf("------------ Fin de lire_variable() \n"));
+		return faux;
 	}
 	else {
-		DEBUG(printf("Variable not found \n"));
-        DEBUG(printf("------------ Fin de lire_variable() \n"));
-        return faux;
+		DEBUG(printf ("Variable trouvée: %s \n", pPath));
+		strcpy(valeur, pPath);
+		DEBUG(printf("------------ Fin de lire_variable() \n"));
+		return vrai;
+
 	}
 }
 
-char *editwd(char *wd, char *home) {
-	static char buffer[4096];
-	if (COMMENCE_PAR(wd, home)) {
-		strcpy(buffer, "~");
-		wd += strlen(home);
-		strcat(buffer, wd);
-		return buffer;
+char *simplify_wd(char *wd, char *home) {
+	static char buffer[CHAINE_MAX];
+	if (COMMENCE_PAR(wd, home)) {	//si le chemin courant commence par le "HOME" de l'utilisateur
+		strcpy(buffer, "~");	//alors on peut simplifier le chemin courant en remplacant le chemin courant par un "~"
+		wd += strlen(home);	//on décale la chaine de charactere du chemin courant de n charcatères (n étant le nombre de charactères de la chaine contenant le "HOME")
+		strcat(buffer, wd);	//on rajoute le chemin courant à notre buffer
+		return buffer;	//on renvoie le buffer
 	}
 	else
-		return wd;
+		return wd;	//pas de simplification possible
 }

@@ -26,6 +26,6 @@ t_bool ecrire_variable(char *nomVar, char *valeur);
 
 t_bool lire_variable(char *nomVar, char *valeur);
 
-char *editwd(char *wd, char *home);
+char *simplify_wd(char *wd, char *home);
 
 #endif
