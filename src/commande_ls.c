@@ -49,23 +49,27 @@ int main(int argc, char *argv[]) {
 void list_content(char *folder, bool L_OPTION, bool A_OPTION) {
     DIR *d;
     struct dirent *dir;
-    struct stat stats;
+    char path[CHAINE_MAX];
+    char fpath[CHAINE_MAX];
 
     if ((d = opendir(folder)) == NULL) {
         printf("Erreur");
     }
-    while ((dir = readdir(d)) != NULL) {
-        char *dwRet;
-        char var[CHAINE_MAX];
-        dwRet = getcwd(var, sizeof(var));
-        printf("PATH : %s\n", var);
 
-        if (stat(dir->d_name, &stats) == 0) {  //modifier le dir name pour chemin custom ? http://stackoverflow.com/questions/28441756/list-directory-and-display-details-of-each-file-owner-octal-permissions-and-fi
+    strcpy(path, folder);
+    strcat(path, "/");
+
+    while ((dir = readdir(d)) != NULL) {
+        struct stat stats;
+        strcpy(fpath, path);
+        strcat(fpath, dir->d_name);
+
+        if (stat(fpath, &stats) == 0) {  //modifier le dir name pour chemin custom ? http://stackoverflow.com/questions/28441756/list-directory-and-display-details-of-each-file-owner-octal-permissions-and-fi
             /* nom */
             char *name[512];
             if (S_ISDIR(stats.st_mode)) //si c'est un dossier
                 strcpy((char *) name, BLU);
-            else if (access(dir->d_name, F_OK|X_OK) == 0)   //si c'est un executable (condition else car les dossiers sont aussi des executables)
+            else if (access(fpath, F_OK|X_OK) == 0)   //si c'est un executable (condition else car les dossiers sont aussi des executables)
                 strcpy((char *) name, GRN);
             else
                 strcpy((char *) name, RESET);
