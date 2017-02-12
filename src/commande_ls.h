@@ -18,4 +18,7 @@
 #define WHT   "\x1B[37m"
 #define RESET "\x1B[0m"
 
+#define CHAINE_MAX 512
+
+
 #endif //PROJET_BASH_SOURCE_COMMANDE_LS_H
