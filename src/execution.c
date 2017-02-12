@@ -1,5 +1,6 @@
 #include <wait.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "execution.h"
 #include "commandes_internes.h"
 #include "commandes_externes.h"
@@ -57,15 +58,15 @@ void execution_ligne_cmd(parse_info *info) {
             pipe(p);
             pid_t pid_fils1 = -1;
 
-            if ((pid_fils1=fork()) < 0){
-
+            if ((pid_fils1=fork()) < 0) {
+                printf("Une erreur a eu lieu : %s\n", strerror(errno));
             }
-            if (!pid_fils1) {
-                close(p[0]);
+            if (!pid_fils1) {   //si on est dans le fils
+                close(p[0]);    //on ferme le côté "lecture" du pipe
                 dup2(p[1], 1);
                 close(p[1]);
                 execution_cmd(info, i, nb_arg);
-            }else{
+            } else {
                 pid_t pid_fils2 = -1;
                 if ((pid_fils2=fork()) < 0) {
 
@@ -133,7 +134,6 @@ void execution_ligne_cmd(parse_info *info) {
 }
 
 t_bool execution_cmd(parse_info *info, int debut, int nb_arg) {
-
     if (EST_EGAL(info->ligne_cmd[debut], "echo")) {
         return ActionECHO(info, debut, nb_arg);
     }

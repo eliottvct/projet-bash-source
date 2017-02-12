@@ -45,7 +45,7 @@ parse_info *parse(char *ligne_cmd) {
              */
             i++;
             info->modificateur[i] = COMMENTAIRE;
-            strcpy(info->ligne_cmd[i], ""); /* on copie par d�faut une chaine vide qui sera remplac�e dans les it�rations suivantes */
+            strcpy(info->ligne_cmd[i], ""); //on copie par d�faut une chaine vide qui sera remplac�e dans les it�rations suivantes
         } else if (COMMENCE_PAR(tok, "#")) {
             /* Attention pour la prise en compte du commentaire :
              * ... #commande en arriere plan

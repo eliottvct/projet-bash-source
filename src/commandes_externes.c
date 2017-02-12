@@ -70,7 +70,7 @@ void execute(parse_info * info, int nbArg, int debut) {
 
     for (int j = 0; j < nbArg; j++) //pour chaque argument
         args[j] = info->ligne_cmd[debut + j];   //on l'ajoute au tableau d'arguments
-    args[nbArg] = (char *) 0;   //on conclue en fermant le tableau
+    args[nbArg] = (char *) 0;   //on conclu en fermant le tableau
 
     if (EST_EGAL(cmd, "ls")) {  //si la commande à exécuter est "ls"
         char chemin_commande_ls[CHAINE_MAX];    //alors on recherche le chemin de cette commande "spéciale", sauvegardé au lancement du shell
