@@ -24,15 +24,15 @@ t_bool ActionEXEC(parse_info *info, int debut, int nbArg) {
             if ((info->modificateur[debut + 1] != ARRIERE_PLAN)) {
                 waitpid(pid_fils,&status,0);
                 if (WIFEXITED(status)) {
-                    printf("child %d exited with = %d\n", pid_fils, WEXITSTATUS(status));
+                    DEBUG(printf("child %d exited with = %d\n", pid_fils, WEXITSTATUS(status)));
                     if (WEXITSTATUS(status) == 0)   //program succeeded
                         return vrai;
                     else    //program failed but exited normally
                         return faux;
                     //exit(WEXITSTATUS(status));
                 }
-                if(WIFSIGNALED(status)) {
-                    printf("Le processus %d est mort: signal %d\n", pid_fils, WTERMSIG(status));
+                if (WIFSIGNALED(status)) {
+                    DEBUG(printf("Le processus %d est mort: signal %d\n", pid_fils, WTERMSIG(status)));
                     return faux;
                 }
                 else//program exited abnormally
@@ -75,7 +75,7 @@ void execute(parse_info * info, int nbArg, int debut) {
         char chemin_commande[CHAINE_MAX];
         lire_variable("PROJECT_PATH", chemin_commande);
         strcat(chemin_commande, "/ls");
-        printf("le chemin de la commande est : %s\n", chemin_commande);
+        //printf("le chemin de la commande est : %s\n", chemin_commande);
         execv(chemin_commande, args);
         exit(errno);
     }
