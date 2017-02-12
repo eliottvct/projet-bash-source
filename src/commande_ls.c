@@ -12,19 +12,7 @@
 #include <pwd.h>
 #include <unistd.h>
 
-
-#define COMMENCE_PAR(a, b)    (strncmp((a), (b), strlen((b)))==0)
-#define EST_EGAL(a, b)        (strlen((a))==strlen((b)) && COMMENCE_PAR((a),(b)))
-
-
-#define RED   "\x1B[31m"
-#define GRN   "\x1B[32m"
-#define YEL   "\x1B[33m"
-#define BLU   "\x1B[34m"
-#define MAG   "\x1B[35m"
-#define CYN   "\x1B[36m"
-#define WHT   "\x1B[37m"
-#define RESET "\x1B[0m"
+#include "commande_ls.h"
 
 int main(int argc, char *argv[]) {
 
@@ -58,7 +46,7 @@ int main(int argc, char *argv[]) {
         }
 
         //TODO : chemin absolu en arg
-        //TODO : rajouter tri alphabetique
+        //TODO : rajouter tri alphabetique -> trop penible
 
         //int i = 0;
         while ((dir = readdir(d)) != NULL) {
