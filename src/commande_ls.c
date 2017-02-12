@@ -21,7 +21,6 @@ int main(int argc, char *argv[]) {
 
     char folder[CHAINE_MAX];
     strcpy(folder, ".");
-    char custom_path[CHAINE_MAX];
 
     for( int i = 0; i < argc; ++i ) {
         //printf( "argv[%d] = %s\n", i, argv[i]);
