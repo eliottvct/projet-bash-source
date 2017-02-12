@@ -58,14 +58,14 @@ $(eval $(call add_target,shell,\
     SOURCES += ${SOURCE}/execution.c,\
     SOURCES += ${SOURCE}/parse.c,\
     SOURCES += ${SOURCE}/shell.c,\
-    CFLAGS := -Wall -I./include,\
+    CFLAGS := -O0 -g -W -Wall -I./include -Wextra -Wconversion -Werror -mtune=native  -march=native  -std=c99  -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700,\
 ))
 
 # Add 'ls' target to the project
 $(eval $(call add_target,ls,\
     TARGET := $(BIN)/ls,\
     SOURCES := ${SOURCE}/commande_ls.c,\
-    CFLAGS := -I./include,\
+    CFLAGS := -O0 -g -W -Wall -I./include -Wextra -Wconversion -Werror -mtune=native  -march=native  -std=c99  -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700,\
 ))
 
 
