@@ -11,26 +11,22 @@ t_bool ActionECHO(parse_info *info, int debut, int nbArg) {
     int i;
     FILE *sortie;
 
-    //si une redirection est demandée
-    if (!EST_EGAL(info->sortie, "")) {
-        sortie = fopen(info->sortie,"w");
-        if (sortie == NULL) {   //si le fichier n'est pas accessible en écriture
+    if (!EST_EGAL(info->sortie, "")) {  //si une redirection est demandée
+        sortie = fopen(info->sortie, "w");  //on ouvre le fichier en écriture
+        if (sortie == NULL) //si le fichier n'est pas accessible en écriture
             return faux;
-        }
     }
-    else {  //aucune redirection demandée
-        sortie = stdout;
-    }
+    else    //aucune redirection demandée
+        sortie = stdout;    //la sortie est la sortie standard stdout
 
     i = 1;
-    while (i < nbArg) {
-        fprintf(sortie, "%s ", info->ligne_cmd[debut + i]);
+    while (i < nbArg) { //tant qu'il y a des arguments
+        fprintf(sortie, "%s ", info->ligne_cmd[debut + i]); //on "écrit" chaque argument dans la sortie
         i++;
     }
     printf("\n");
 
-    //si aucune redirection n'est demandée
-    if (!EST_EGAL(info->sortie, "")) {
+    if (!EST_EGAL(info->sortie, "")) {      //si aucune redirection n'est demandée
         fclose(sortie); //fermeture de la sortie (uniquement pour le fichier)
     }
     return vrai;
@@ -45,11 +41,11 @@ t_bool ActionSET(parse_info *info, int debut, int nbArg) {
         return faux;
     }
 
-    if (nbArg == 4) {
+    if (nbArg == 4) {   //si l'utilisateur a saisi 4 arguments
         return ecrire_variable(info->ligne_cmd[debut + 1], info->ligne_cmd[debut + 3]);
     }
-    else if (nbArg == 3) {
-        return ecrire_variable(info->ligne_cmd[debut + 1], NULL);
+    else if (nbArg == 3) {  //si l'utilisateur a saisi 3 arguments
+        return ecrire_variable(info->ligne_cmd[debut + 1], NULL);   //alors la variable n'aura pas de valeur (d'où le NULL)
     }
     else {
         return faux;
@@ -57,14 +53,12 @@ t_bool ActionSET(parse_info *info, int debut, int nbArg) {
 }
 
 t_bool ActionCD(parse_info *info, int debut, int nbArg) {
-
-    //TODO : redirection sortie
     char def[MAX_PATH];
     char dirName[MAX_PATH];
     int i;
 
-    if (nbArg == 1) {
-        lire_variable("HOME", def);
+    if (nbArg == 1) {   //si l'utilisateur n'a pas rajouté d'argument
+        lire_variable("HOME", def); //on récupère le répertoire "HOME" de l'utilisateur
         if (chdir(def) == -1) {
             DEBUG(printf("Impossible de changer vers le repertoire '%s' \n", def));
             return faux;
@@ -75,7 +69,6 @@ t_bool ActionCD(parse_info *info, int debut, int nbArg) {
             if (strlen(dirName) != 0) strcat(dirName, " ");
             strcat(dirName, info->ligne_cmd[debut + i]);
         }
-
         if (chdir(dirName) == -1) {
             DEBUG(printf("Impossible de changer vers le repertoire '%s'\n", dirName));
             return faux;
@@ -90,7 +83,7 @@ t_bool ActionPWD() {
     wd[MAX-1] = '\0';
 
     if (getcwd(wd, MAX-1) == NULL) {
-        printf("Can not get current working directory\n");
+        printf("Impossible de récupérer le chemin courant.\n");
         return faux;
     }
     else {
