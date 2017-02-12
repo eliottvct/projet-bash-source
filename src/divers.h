@@ -15,6 +15,7 @@
 #define CHAINE_MAX 512
 #define MAX_PATH 512
 
+
 typedef enum {
     faux = 0, vrai
 } t_bool;
