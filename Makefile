@@ -1,133 +1,76 @@
-#/// @file 
-#/// @brief Generic Makefile for the System 2 project.                                                 
-#                                                                                                   
-#/// @detail If you just add some library files used by the project.c program, you have nothing to change to compile them if sources are in the ./src directory. To add a new binary, just add the name of the main file in the TARGETS variable.             
+#
+# Boilerplate.
+#
+define add_target
+    $(info add_target($1))
+    $(eval $(eval_args))
+    $(eval $(call eval_args,$1,\
+        OBJDIR := $(firstword $($1.OBJDIR) ./objs/$1),\
+    ))
+    $(eval $(call eval_args,$1,\
+        objs := $(obj_from_source),
+    ))
+    $(eval $1 := $($1.TARGET))
+
+    TARGETS += $($1)
+    PHONY_TARGETS += $1
+    CLEAN_TARGETS += clean_$1
+
+    .PHONY: clean_$1
+    clean_$1:; rm -rf $($1.OBJDIR) $($1)
+
+    .PHONY: $1
+    $1: $($1)
+
+    $($1): target:=$1
+    $($1): $($1.objs); $$(if $$(wildcard $$(@D)),,mkdir -p $$(@D) && )$$(add_target.link)
+    $($1.objs):; $$(if $$(wildcard $$(@D)),,mkdir -p $$(@D) && )$$(add_target.compile)
+    $(foreach $1.SOURCES,$($1.SOURCES),$(eval $(obj_from_source): $($1.SOURCES)))
+
+    $(info end)
+endef
+
+void :=
+space := $(void) $(void)
+obj_from_source = $(addprefix $($1.OBJDIR)/,$(addsuffix .o,$(basename $(notdir $($1.SOURCES)))))
+eval_args = $(foreach i,2 3 4 5 6 7 8 9,$(call eval_arg,$1,$(strip $($i))))
+eval_arg = $(if $2,$(info $(space)$(space)$1.$2)$(eval $1.$2))
+
+# Link command line
+add_target.link = $(CC) $($(target).LDLAGS) -o $@ $^
+
+# Compile command line
+add_target.compile = $(CC) -c -o $@ $($(target).CFLAGS) $<
 
 
-#Nom du project
-TARGET_SHELL = shell
-TARGET_LS = ls
-
-##############
-# Constantes #
-##############
-
-# Repertoires
-SOURCE = ./src
-BIN = ./bin
-DOCPATH = ${SOURCE}/dox
-DOCTARGET = ./doc
-DIRLIST = ${SOURCE} ${BIN}
-#DEP = ${SOURCE}/depend
-#DIRLIST = ${SOURCE} ${BIN} ${OPT} ${DEP}
-
-# Cibles
-BINSHELL = ${TARGET_SHELL:%=${BIN}/%}
-BINLS = ${TARGET_LS:%=${BIN}/%}
-
-# Commandes
-CC = gcc
-
-# Options
-CFLAGS = -O0 -g -W -Wall -Wextra -Wconversion -Werror -mtune=native  -march=native  -std=c99  -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700
-LDFLAGS = -lm -W -Wall -pedantic -L. -lm
-
-# Fichiers
-DOX = ${wildcard ${DOCPATH}/*.dox} # Sources
-SRC_SHELL = ${wildcard ${SOURCE}/divers.c ${SOURCE}/commandes_externes.c ${SOURCE}/commandes_internes.c ${SOURCE}/entities.c ${SOURCE}/execution.c ${SOURCE}/parse.c ${SOURCE}/shell.c} # Sources
-SRC_LS = ${wildcard ${SOURCE}/commande_ls.c}
-INT_SHELL = ${wildcard ${SOURCE}/divers.h ${SOURCE}/commandes_externes.h ${SOURCE}/commandes_internes.h ${SOURCE}/execution.h ${SOURCE}/parse.h} # Interfaces
-INT_LS = ${wildcard ${SOURCE}/commande_ls.h}
-OBJ_SHELL = ${SRC_SHELL:%.c=%.o}	 	# Objets
-OBJ_LS = ${SRC_LS:%.c=%.o}
-
-##########
-# Regles #
-##########
-
-# ALL
-all : ${BINSHELL} ${BINLS}
-
-# CLEAN
-clean :
-	@echo
-	@echo Cleaning : object files
-	@echo --------
-	@echo
-	rm -f ${OBJ_SHELL}
-	rm -f ${OBJ_LS}
-
-clean-doc :
-	@echo
-	@echo Cleaning : object files
-	@echo --------
-	@echo
-	rm -fr ${DOCTARGET}
-
-clean-emacs :
-	@echo
-	@echo Cleaning : emacs back-ups
-	@echo --------
-	@echo
-	rm -f ${SOURCE}/*~
-	rm -f ${SOURCE}/\#*\#
-	rm -f *~
-	rm -f \#*\#
-
-clean-bin :
-	@echo
-	@echo Cleaning : binaries
-	@echo --------
-	@echo
-	rm -f ${BINSHELL}
-	rm -f ${BINLS}
-
-distclean : clean clean-emacs clean-bin
+# -- Directories --
+SOURCE := ./src
+BIN := ./bin
 
 
-dirs : 
-	@for dir in ${DIRLIST} ;\
-	do \
-	    echo Creating directory : $${dir} ;\
-	    echo ------------------ ;\
-	    if test -d $${dir} ;\
-	    then \
-		echo Directory already exists ;\
-	    else mkdir -p $${dir} ;\
-	    fi ;\
-	    echo Done ;\
-	    echo ;\
-	done
+# Add 'shell' target to the project
+$(eval $(call add_target,shell,\
+    TARGET := $(BIN)/shell,\
+    SOURCES += ${SOURCE}/divers.c,\
+    SOURCES += ${SOURCE}/commandes_externes.c,\
+    SOURCES += ${SOURCE}/commandes_internes.c,\
+    SOURCES += ${SOURCE}/entities.c,\
+    SOURCES += ${SOURCE}/execution.c,\
+    SOURCES += ${SOURCE}/parse.c,\
+    SOURCES += ${SOURCE}/shell.c,\
+    CFLAGS := -Wall -I./include,\
+))
 
-# Binaires
-${BIN}/${TARGET_SHELL} : ${${TARGET_SHELL}:%=${SOURCE}/%}
-${BIN}/${TARGET_LS} : ${${TARGET_LS}:%=${SOURCE}/%}
+# Add 'ls' target to the project
+$(eval $(call add_target,ls,\
+    TARGET := $(BIN)/ls,\
+    SOURCES := ${SOURCE}/commande_ls.c,\
+    CFLAGS := -I./include,\
+))
 
-${BIN}/% : $(OBJ_SHELL)
-	@echo
-	@echo Linking bytecode : $@
-	@echo ----------------
-	@echo
-	${CC} -o $@ $^ ${LDFLAGS}
-	@echo
-	@echo Done
-	@echo
 
-# Regles generiques
-%.o : %.c %.h 
-	@echo
-	@echo Compiling $@
-	@echo --------
-	@echo
-	$(CC) $(CFLAGS) -c $< -o $@
+all: ${PHONY_TARGETS}
+.PHONY: all
 
-# Documentation 
-doc : ${SRC} ${INT} ${DOX}
-	doxygen; doxygen
-
-#############################
-# Inclusion et spécificités #
-#############################
-
-.PHONY : all clean clean-doc clean-emacs clean-bin distclean doc
-
+clean: | $(CLEAN_TARGETS)
+.PHONY: clean
